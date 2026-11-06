@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evidencias del monitor de servidor</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #172033;
+            background: #f1f5f9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { margin: 0; }
+
+        header {
+            padding: 28px max(24px, calc((100% - 1080px) / 2));
+            color: #fff;
+            background: #0f172a;
+        }
+
+        header h1 { margin: 0 0 8px; font-size: 1.65rem; }
+        header p { margin: 0; color: #cbd5e1; }
+
+        main { width: min(1080px, calc(100% - 32px)); margin: 28px auto; }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .links a {
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #fff;
+            background: #0369a1;
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .links a:hover { background: #075985; }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+            gap: 20px;
+        }
+
+        figure {
+            margin: 0;
+            overflow: hidden;
+            border: 1px solid #dbe3ee;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 3px 12px #0f172a0c;
+        }
+
+        figure img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: contain;
+            background: #e2e8f0;
+        }
+
+        figcaption { padding: 16px; }
+        figcaption h2 { margin: 0 0 6px; font-size: 1rem; }
+        figcaption p { margin: 0; color: #64748b; font-size: .9rem; }
+        figcaption a { color: #0369a1; }
+
+        footer { margin: 24px 0; color: #64748b; font-size: .85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Evidencias del monitor de servidor</h1>
+        <p>Capturas locales de las vistas y rutas de métricas para revisar su funcionamiento.</p>
+    </header>
+
+    <main>
+        <nav class="links" aria-label="Vistas en vivo">
+            <a href="/servidor">Abrir monitor del servidor</a>
+            <a href="/api/metrics">Abrir respuesta JSON de métricas</a>
+            <a href="/evidencias/api-response.html">Ver JSON formateado</a>
+            <a href="/security-dashboard">Abrir dashboard de seguridad</a>
+        </nav>
+
+        <section class="gallery" aria-label="Capturas">
+            <figure>
+                <a href="servidor.png"><img src="servidor.png" alt="Captura del monitor del servidor funcionando"></a>
+                <figcaption>
+                    <h2>Monitor del servidor — /servidor</h2>
+                    <p>Vista del dashboard con las métricas disponibles en el equipo.</p>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <a href="api-metrics.png"><img src="api-metrics.png" alt="Captura de la respuesta JSON de api/metrics"></a>
+                <figcaption>
+                    <h2>Respuesta de la API — /api/metrics</h2>
+                    <p>Respuesta JSON obtenida desde el endpoint. <a href="/evidencias/api-response.html">Abrir visor en vivo</a>.</p>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <a href="security-dashboard.png"><img src="security-dashboard.png" alt="Captura del dashboard de seguridad"></a>
+                <figcaption>
+                    <h2>Dashboard de seguridad</h2>
+                    <p>Panel de auditoría con los indicadores y eventos de acceso.</p>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <a href="graficos.png"><img src="graficos.png" alt="Captura de los gráficos de CPU, memoria y disco en tiempo real"></a>
+                <figcaption>
+                    <h2>Gráficos en tiempo real — /graficos</h2>
+                    <p>Gráficos que reciben CPU, memoria y disco desde el mismo canal WebSocket.</p>
+                </figcaption>
+            </figure>
+        </section>
+
+        <footer>Las imágenes son instantáneas y no se actualizan automáticamente. Usa los enlaces superiores para consultar las vistas en vivo.</footer>
+    </main>
+</body>
+</html>
