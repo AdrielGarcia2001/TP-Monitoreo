@@ -1,4 +1,4 @@
-# 🚀 TP MONITOR
+# 🚀 TP Monitor de Servidor con Laravel
 
 > **Desarrollador:** Adriel  
 > **Entorno de Pruebas:** Windows 10/11 | PHP 8.4 | Laravel 12/13  
@@ -15,38 +15,38 @@
 ---
 
 ## 🛠️ Descripción del Proyecto
-Aplicación desarrollada en **Laravel** orientada a la supervisión de infraestructura de sistemas operativos Windows mediante la integración nativa de comandos **PowerShell/WMI** encapsulados en servicios desacoplados (`ServerMetrics`)[cite: 16, 17]. El sistema expone las métricas recolectadas a través de tres canales unificados: vistas web interactivas Blade, una API REST JSON y canales de difusión en tiempo real impulsados por WebSockets[cite: 16, 29].
+Aplicación desarrollada en **Laravel** orientada a la supervisión de infraestructura de sistemas operativos Windows mediante la integración nativa de comandos **PowerShell/WMI** encapsulados en servicios desacoplados (`ServerMetrics`). El sistema expone las métricas recolectadas a través de tres canales unificados: vistas web interactivas Blade, una API REST JSON y canales de difusión en tiempo real impulsados por WebSockets.
 
 ---
 
 ## 📊 Módulo 1: Monitor de Servidor (REST & Polling)
 
 El núcleo del sistema recolecta en tiempo de ejecución las variables críticas del host local:
-* **Hardware & OS:** Nombre del equipo (`hostname`), versión de plataforma (`php_uname`) y versión de motor PHP[cite: 17].
-* **Almacenamiento y Memoria:** Capacidad total, espacio libre y porcentajes de uso en disco y memoria RAM[cite: 17].
-* **Rendimiento:** Porcentaje de carga de CPU y tiempo activo del sistema (*uptime*)[cite: 17].
+* **Hardware & OS:** Nombre del equipo (`hostname`), versión de plataforma (`php_uname`) y versión de motor PHP.
+* **Almacenamiento y Memoria:** Capacidad total, espacio libre y porcentajes de uso en disco y memoria RAM.
+* **Rendimiento:** Porcentaje de carga de CPU y tiempo activo del sistema (*uptime*).
 
 ### Endpoints Principales
-* `GET /servidor` — Interfaz visual estructurada en tarjetas adaptativas[cite: 21, 22].
-* `GET /api/metrics` — Endpoint JSON protegido opcionalmente por control de tráfico (`throttle:60,1`)[cite: 21, 23].
+* `GET /servidor` — Interfaz visual estructurada en tarjetas adaptativas.
+* `GET /api/metrics` — Endpoint JSON protegido opcionalmente por control de tráfico (`throttle:60,1`).
 
 ---
 
 ## ⚡ Módulo 2: Tiempo Real con WebSockets (Reverb)
 
-Migración del modelo clásico de sondeo (*polling*) hacia una arquitectura basada en eventos reactivos mediante **Laravel Reverb** y **Laravel Echo**[cite: 29, 30].
+Migración del modelo clásico de sondeo (*polling*) hacia una arquitectura basada en eventos reactivos mediante **Laravel Reverb** y **Laravel Echo**.
 
 ### Guía rápida de ejecución de procesos simultáneos
-Para levantar el entorno completo en desarrollo local se requieren cuatro terminales independientes[cite: 11, 43]:
+Para levantar el entorno completo en desarrollo local se requieren cuatro terminales independientes:
 
 | Terminal | Proceso / Comando | Descripción operativa |
 | :--- | :--- | :--- |
-| **1** | `php artisan reverb:start --debug` | Servidor WebSocket oficial en el puerto 8080[cite: 43] |
-| **2** | `php artisan schedule:work` | Scheduler encargado de disparar `metrics:broadcast` cada 5s[cite: 34, 43] |
-| **3** | `npm run dev` | Compilador de assets y enlaces de integración con Vite[cite: 43] |
-| **4** | `php artisan serve` | Servidor HTTP principal de la aplicación Laravel[cite: 43] |
+| **1** | `php artisan reverb:start --debug` | Servidor WebSocket oficial en el puerto 8080 |
+| **2** | `php artisan schedule:work` | Scheduler encargado de disparar `metrics:broadcast` cada 5s |
+| **3** | `npm run dev` | Compilador de assets y enlaces de integración con Vite |
+| **4** | `php artisan serve` | Servidor HTTP principal de la aplicación Laravel |
 
-* **Visualización de Gráficos:** Accediendo a `/graficos` se despliegan componentes dinámicos basados en **Chart.js** que registran una ventana deslizante de las últimas 30 mediciones de CPU, Memoria y Disco[cite: 40, 42].
+* **Visualización de Gráficos:** Accediendo a `/graficos` se despliegan componentes dinámicos basados en **Chart.js** que registran una ventana deslizante de las últimas 30 mediciones de CPU, Memoria y Disco.
 
 ---
 
@@ -66,21 +66,21 @@ Módulo encargado de registrar, auditar y bloquear patrones de autenticación an
 ## 🧠 Cuestionario Técnico y Decisiones de Arquitectura
 
 ### 1. ¿Por qué la temperatura suele aparecer como "No disponible" en Windows?
-Requiere privilegios elevados de Administrador para consultar los registros WMI de la clase `MSAcpi_ThermalZoneTemperature`[cite: 17]. Si el pool de ejecución opera con permisos estándar o el hardware del equipo no expone dichos sensores térmicos ACPI, el sistema intercepta la excepción de forma segura retornando `null`[cite: 17, 20].
+Requiere privilegios elevados de Administrador para consultar los registros WMI de la clase `MSAcpi_ThermalZoneTemperature`. Si el pool de ejecución opera con permisos estándar o el hardware del equipo no expone dichos sensores térmicos ACPI, el sistema intercepta la excepción de forma segura retornando `null`.
 
 ### 2. ¿Por qué el script de PowerShell nunca debe incluir datos que vengan del usuario?
-Concatenar entradas directas del usuario (parámetros HTTP o formularios) dentro de ejecuciones de nivel de sistema mediante `shell_exec()` expone a la aplicación a vulnerabilidades críticas de **Inyección de Comandos (RCE)**[cite: 20, 35]. Por esta razón, el sistema implementa comandos estáticos y listas blancas estrictas[cite: 20, 35].
+Concatenar entradas directas del usuario (parámetros HTTP o formularios) dentro de ejecuciones de nivel de sistema mediante `shell_exec()` expone a la aplicación a vulnerabilidades críticas de **Inyección de Comandos (RCE)**. Por esta razón, el sistema implementa comandos estáticos y listas blancas estrictas.
 
 ### 3. Qué riesgos implica exponer `/api/metrics` sin autenticación?
-* **Information Disclosure:** Revela detalles internos de la arquitectura del servidor (versiones, rutas y capacidades de hardware)[cite: 23].
-* **Denegación de Servicio (DoS):** Cada petición HTTP obliga a instanciar un proceso hijo de PowerShell en segundo plano, saturando los recursos del sistema ante peticiones masivas[cite: 23].
+* **Information Disclosure:** Revela detalles internos de la arquitectura del servidor (versiones, rutas y capacidades de hardware).
+* **Denegación de Servicio (DoS):** Cada petición HTTP obliga a instanciar un proceso hijo de PowerShell en segundo plano, saturando los recursos del sistema ante peticiones masivas.
 
 ### 4. Impacto del Polling vs. WebSockets en concurrencia
-* **Polling (TP1):** 50 usuarios consultando cada 5 segundos generan un tráfico constante de 600 solicitudes HTTP por minuto, multiplicando la ejecución de procesos del sistema operativo[cite: 23, 33].
-* **WebSockets (TP2):** El servidor ejecuta una única lectura centralizada cada 5 segundos y distribuye eficientemente el evento unificado a todos los clientes mediante una conexión persistente abierta[cite: 33].
+* **Polling (TP1):** 50 usuarios consultando cada 5 segundos generan un tráfico constante de 600 solicitudes HTTP por minuto, multiplicando la ejecución de procesos del sistema operativo.
+* **WebSockets (TP2):** El servidor ejecuta una única lectura centralizada cada 5 segundos y distribuye eficientemente el evento unificado a todos los clientes mediante una conexión persistente abierta.
 
 ### 5. ¿Por qué se utiliza una lista blanca en el control de ejecución de aplicaciones (`DemoController`)?
-Porque el cliente nunca envía comandos ejecutables; solo transmite un identificador seguro (clave) que el controlador traduce mediante una constante interna (`APPS`)[cite: 35, 36]. Cualquier llave ajena a la lista genera un error estricto `404`, blindando al servidor frente a ejecuciones arbitrarias[cite: 35, 36].
+Porque el cliente nunca envía comandos ejecutables; solo transmite un identificador seguro (clave) que el controlador traduce mediante una constante interna (`APPS`). Cualquier llave ajena a la lista genera un error estricto `404`, blindando al servidor frente a ejecuciones arbitrarias.
 
 ---
 *Documentación técnica para la asignatura Programación IV - UTN FRRe.*
